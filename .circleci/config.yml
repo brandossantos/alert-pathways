@@ -1,0 +1,106 @@
+# Using CircleCI 2.0
+---
+docker_config: &docker_config
+  - image: expel-docker-dev.jfrog.io/expel-base:latest
+    auth:
+      username: expelcircleci
+      password: $ARTIFACTORY_PW
+
+version: 2
+workflows:
+  version: 2
+  devel:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /.*/
+      - devel_build:
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              only: /.*/
+          requires:
+            - test
+      - publish:
+          filters:
+            branches:
+              only: master
+            tags:
+              only: /.*/
+          requires:
+            - devel_build
+  release:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - release_build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+          requires:
+            - test
+      - publish:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+          requires:
+            - release_build
+jobs:
+  test:
+    docker: *docker_config
+    working_directory: /app
+    steps:
+      - run:
+          name: Unit test notebook
+          command: |
+            # No tests defined
+  devel_build:
+    docker: *docker_config
+    working_directory: /app
+    steps:
+      - checkout
+      - run:
+          name: Build RPM
+          command: |
+            make rpm-devel
+      - persist_to_workspace:
+          root: /app
+          paths:
+            - "*.rpm"
+            - "Makefile"
+  release_build:
+    docker: *docker_config
+    working_directory: /app
+    steps:
+      - checkout
+      - run:
+          name: Build RPM
+          command: |
+            make rpm-release
+      - persist_to_workspace:
+          root: /app
+          paths:
+            - "*.rpm"
+            - "Makefile"
+  publish:
+    docker: *docker_config
+    working_directory: /app
+    steps:
+     - attach_workspace:
+         at: /app
+     - deploy:
+         name: Publish RPM
+         command: |
+           make publish

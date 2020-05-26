@@ -1,0 +1,49 @@
+repos:
+- repo: git://github.com/pre-commit/pre-commit-hooks
+  rev: v2.1.0
+  hooks:
+    - id: check-added-large-files
+      language_version: python3.5
+    - id: check-ast
+      language_version: python3.5
+    - id: check-case-conflict
+      language_version: python3.5
+    - id: check-docstring-first
+      language_version: python3.5
+    - id: check-json
+      language_version: python3.5
+    - id: check-merge-conflict
+      language_version: python3.5
+    - id: check-xml
+      language_version: python3.5
+    - id: check-yaml
+      language_version: python3.5
+    - id: debug-statements
+      language_version: python3.5
+    - id: detect-private-key
+      language_version: python3.5
+    - id: end-of-file-fixer
+      language_version: python3.5
+    - id: requirements-txt-fixer
+      language_version: python3.5
+    - id: trailing-whitespace
+      language_version: python3.5
+- repo: git://github.com/asottile/reorder_python_imports
+  rev: v1.4.0
+  hooks:
+    - id: reorder-python-imports
+      language_version: python3.5
+      exclude: '(versioneer|_version).py'
+- repo: https://github.com/Lucas-C/pre-commit-hooks-bandit
+  rev: v1.0.3
+  hooks:
+    - id: python-bandit-vulnerability-check
+      language_version: python3.5
+      args: [--ini, .banditrc, --recursive, templatepython]
+      files: .py$
+- repo: https://github.com/pre-commit/mirrors-autopep8
+  rev: v1.4.3
+  hooks:
+    - id: autopep8
+      language_version: python3.5
+      args: ['-i', '--max-line-length=120']
