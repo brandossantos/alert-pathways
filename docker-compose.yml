@@ -2,7 +2,7 @@
 version: '2'
 
 services:
-  templatenotebook:
+  alert-pathways:
     environment:
       - 'ARTIFACTORY_PW=${ARTIFACTORY_PW}'
       - 'PROJECT_NAME=${CIRCLE_PROJECT_REPONAME}'
